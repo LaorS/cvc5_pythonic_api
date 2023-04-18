@@ -1725,7 +1725,7 @@ def Or(*args):
 class StringRef(ExprRef):
     """String expressions"""
     def concat(self,other):
-        pass
+        return StringRef(self.ctx.solver.mkTerm(Kind.STRING_CONCAT,self.ast,other.ast))
     
     def __add__(self, other):
         """Create the SMT expression `self + other`.
@@ -1783,7 +1783,8 @@ def is_string(a):
 
 def concat(s1,s2,ctx=None):
     ctx = _get_ctx(ctx)
-    return StringRef(ctx.solver.mkTerm(Kind.STRING_CONCAT,s1,s2))
+    return StringRef(ctx.solver.mkTerm(Kind.STRING_CONCAT,s1.ast,s2.ast))
+
 #########################################
 #
 # Arithmetic
