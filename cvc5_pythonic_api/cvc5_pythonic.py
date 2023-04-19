@@ -1720,6 +1720,9 @@ def Or(*args):
 # String
 #
 #########################################
+class StringSortRef(SortRef):
+    """String sort."""
+    
 
 
 class StringRef(ExprRef):
@@ -1737,7 +1740,7 @@ class StringRef(ExprRef):
         >>> (x + y).sort()
         String
         """
-        return StringRef(self.ctx.solver.mkTerm(Kind.STRING_CONCAT, self,other), self.ctx)
+        return StringRef(self.ctx.solver.mkTerm(Kind.STRING_CONCAT, self.ast,other.ast), self.ctx)
 
     def __radd__(self, other):
         """Create the SMT expression `other + self`.
@@ -1746,8 +1749,7 @@ class StringRef(ExprRef):
         >>> 10 + x
         10 + x
         """
-        a, b = _coerce_exprs(self, other)
-        return ArithRef(a.ctx.solver.mkTerm(Kind.ADD, b.ast, a.ast), self.ctx)
+        return StringRef(self.ctx.solver.mkTerm(Kind.STRING_CONCAT, other.ast,self.ast), self.ctx)
 
 
 def StringSort(ctx=None):
@@ -1760,7 +1762,7 @@ def StringSort(ctx=None):
     True
     """
     ctx = _get_ctx(ctx)
-    return SortRef(ctx.solver.getStringSort(), ctx)
+    return StringSortRef(ctx.solver.getStringSort(), ctx)
 
 
 def String(name,ctx=None):
@@ -1781,9 +1783,29 @@ def is_string(a):
     """
     return isinstance(a, StringRef)
 
+def StringVal(val, ctx=None):
+    """Return an SMT String value.
+
+    `val` may be a Python int, long, float or string representing a number in decimal or rational notation.
+    If `ctx=None`, then the global context is used.
+
+    >>> RealVal(1)
+    1
+    >>> RealVal(1).sort()
+    Real
+    >>> RealVal("3/5")
+    3/5
+    >>> RealVal("1.5")
+    3/2
+    """
+    ctx = _get_ctx(ctx)
+    return StringRef(ctx.solver.mkString(str(val)), ctx)
+
 def concat(s1,s2,ctx=None):
+
     ctx = _get_ctx(ctx)
     return StringRef(ctx.solver.mkTerm(Kind.STRING_CONCAT,s1.ast,s2.ast))
+
 
 #########################################
 #
