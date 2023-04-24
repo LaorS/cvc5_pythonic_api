@@ -1727,8 +1727,6 @@ class StringSortRef(SortRef):
 
 class StringRef(ExprRef):
     """String expressions"""
-    def concat(self,other):
-        return StringRef(self.ctx.solver.mkTerm(Kind.STRING_CONCAT,self.ast,other.ast))
     
     def __add__(self, other):
         """Create the SMT expression `self + other`.
@@ -1801,10 +1799,6 @@ def StringVal(val, ctx=None):
     ctx = _get_ctx(ctx)
     return StringRef(ctx.solver.mkString(str(val)), ctx)
 
-def concat(s1,s2,ctx=None):
-
-    ctx = _get_ctx(ctx)
-    return StringRef(ctx.solver.mkTerm(Kind.STRING_CONCAT,s1.ast,s2.ast))
 
 
 #########################################
