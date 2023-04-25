@@ -733,7 +733,7 @@ def DeclareSort(name, ctx=None):
     >>> a == b
     a == b
     >>> solve(a == b)
-    [a = (as @a0 A), b = (as @a0 A)]
+    [a = (as @a0 A), b = (as @a0 A)]    
     """
     ctx = _get_ctx(ctx)
     return SortRef(ctx.solver.mkUninterpretedSort(name), ctx)
@@ -772,6 +772,8 @@ def _to_sort_ref(s, ctx):
         return ArithSortRef(s, ctx)
     elif s.isBitVector():
         return BitVecSortRef(s, ctx)
+    elif s.isFiniteField():
+        return FiniteFieldSortRef(s, ctx)
     elif s.isArray():
         return ArraySortRef(s, ctx)
     elif s.isSet():
@@ -1743,7 +1745,7 @@ class StringRef(ExprRef):
     def __radd__(self, other):
         """Create the SMT expression `other + self`.
 
-        >>> x = Int('x')
+        >>> x = String('x')
         >>> 10 + x
         10 + x
         """
@@ -1799,7 +1801,11 @@ def StringVal(val, ctx=None):
     ctx = _get_ctx(ctx)
     return StringRef(ctx.solver.mkString(str(val)), ctx)
 
-
+def Length(s,ctx = None):
+    """obtain the length of a string s
+    """
+    ctx = _get_ctx(ctx)
+    return ArithRef(ctx.solver.mkTerm(Kind.STRING_LENGTH,s.ast),ctx)
 
 #########################################
 #
