@@ -1807,6 +1807,11 @@ def Length(s,ctx = None):
     ctx = _get_ctx(ctx)
     return ArithRef(ctx.solver.mkTerm(Kind.STRING_LENGTH,s.ast),ctx)
 
+def SubString(s,offset,length,ctx=None):
+    """Extract substring or subsequence starting at offset"""
+    ctx = _get_ctx(ctx)
+    return StringRef(ctx.solver.mkTerm(Kind.STRING_SUBSTR,s.ast,offset,length),ctx)
+
 #########################################
 #
 # Arithmetic
