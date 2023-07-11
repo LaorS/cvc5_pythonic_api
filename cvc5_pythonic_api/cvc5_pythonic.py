@@ -1783,6 +1783,8 @@ class SeqRef(ExprRef):
         >>> seq = Const('seq',SeqSort(IntSort()))
         >>> seq[0]
         seq [] 0
+        >>> seq[0].sort()
+        Int
         """
         if _is_int(i):
             i = IntVal(i, self.ctx)
@@ -1791,6 +1793,14 @@ class SeqRef(ExprRef):
         )
 
     def at(self, i):
+        """Return the sequence at index i
+        
+        >>> seq = Const('seq',SeqSort(IntSort()))
+        >>> seq.at(0)
+        At(seq, 0)
+        >>> seq.at(0).sort()
+        (Seq Int)
+        """
         if _is_int(i):
             i = IntVal(i, self.ctx)
         return SeqRef(self.ctx.solver.mkTerm(Kind.SEQ_AT, self.ast, i.ast), self.ctx)
@@ -2089,13 +2099,13 @@ def SubSeq(s, offset, length):
 def SeqUpdate(s, t, i):
     """Update a sequence s by replacing its content starting at index i with sequence t.
 
-    >>> lst = Concat(Concat(Unit(IntVal(3)),Unit(IntVal(2))),Unit(IntVal(1)))
+    >>> lst = Unit(IntVal(1)) + Unit(IntVal(2)) + Unit(IntVal(3))
     >>> simplify(lst)
-    (seq.++ (seq.unit 3) (seq.unit 2) (seq.unit 1))()
+    (seq.++ (seq.unit 1) (seq.unit 2) (seq.unit 3))()
     >>> simplify(SeqUpdate(lst,Unit(IntVal(4)),2))
-    (seq.++ (seq.unit 3) (seq.unit 2) (seq.unit 4))()
+    (seq.++ (seq.unit 1) (seq.unit 2) (seq.unit 4))()
     >>> simplify(SeqUpdate(lst,Unit(IntVal(1)),4))
-    (seq.++ (seq.unit 3) (seq.unit 2) (seq.unit 1))()
+    (seq.++ (seq.unit 1) (seq.unit 2) (seq.unit 3))()
     """
     i = _py2expr(i)
     return SeqRef(t.ctx.solver.mkTerm(Kind.SEQ_UPDATE, s.ast, i.ast, t.ast), t.ctx)
